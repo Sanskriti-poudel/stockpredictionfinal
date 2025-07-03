@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock Genie</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f2027;          /* dark blue-gray */
+      color: #e0e0e0;               /* light gray */
+    }
+
+    header {
+      background: linear-gradient(90deg, #2a2d34, #00d96c);  /* dark gray to green */
+      color: white;               /* light green */
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);        /* greenish shadow */
+    }
+
+    header nav a {
+      color: #fff;               /* light green */
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header nav a:hover {
+      background: white;           /* light green background */
+      color: #00d96c;                /* dark green text */
+    }
+
+    .hero {
+      text-align: center;
+      margin: 6rem auto;
+      max-width: 700px;
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+      color: #4caf50;              /* soft green */
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #b0bec5;              /* gray-blue */
+    }
+
+    .hero a {
+      padding: 0.8rem 2rem;
+      background: #4caf50;         /* green */
+      color: #0f2027;              /* dark background color for contrast */
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .hero a:hover {
+      background: #2a2d34;         /* dark gray */
+      color: #4caf50;              /* soft green */
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #263238;          /* dark blue-gray */
+      color: #9e9e9e;               /* gray */
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><h2>STOCK GENIE</h2></div>
+    <nav>
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="{% url 'login' %}">Login</a>
+      <a href="{% url 'signup' %}">Signup</a>
+      
+    </nav>
+  </header>
+
+  <main class="hero">
+    <h1>WELCOME TO STOCK GENIE</h1>
+    <p>"Predict smarter. Trade faster. Manage easier — with STOCK GENIE for Mordern investors.</p>
+    <a href="{% url 'signup'%}">Get Started</a>
+  </main>
+
+  <footer>
+    &copy; 2025 STOCK GENIE
+  </footer>
+</body>
+</html>

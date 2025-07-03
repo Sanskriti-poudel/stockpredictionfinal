@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Payments | STOCK GENIE</title>
+  <style>
+    * {
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:'Segoe UI', sans-serif;
+    }
+    body {
+      background: #1e1f29;            /* dark background */
+      color: #ddd;
+      display:flex;
+      min-height:100vh;
+    }
+    header {
+      background: linear-gradient(90deg, #1e1f29, #00d96c);
+      color: white;
+      padding: 1rem 2rem;
+      position: fixed;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 10px rgba(0, 217, 108, 0.6);
+    }
+    header nav a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 16px;
+      border: 2px solid white;
+      border-radius: 25px;
+      transition: all 0.3s;
+    }
+    header nav a:hover {
+      background: white;
+      color: #00d96c;
+      border-color: #00d96c;
+    }
+    aside {
+      width: 220px;
+      background: #292a3b;
+      padding-top: 70px;
+      position: fixed;
+      top: 60px;
+      bottom: 0;
+      overflow-y: auto;
+    }
+    aside ul {
+      list-style:none;
+      padding-left: 1rem;
+    }
+    aside a {
+      display: block;
+      color: #ddd;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.3s, color 0.3s;
+    }
+    aside a:hover, aside a.active {
+      background: #00d96c;
+      color: #1e1f29;
+    }
+    main {
+      margin-left: 220px;
+      padding: 80px 30px 30px;
+      flex: 1;
+    }
+    h1 {
+      color: #00d96c;
+      margin-bottom: 20px;
+    }
+    .plan {
+      background: #313146;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.55);
+      color: #ddd;
+      transition: background 0.3s ease;
+    }
+    .plan:hover {
+      background: #00d96c;
+      color: #1e1f29;
+    }
+    .plan h3 {
+      margin-bottom: 0.8rem;
+      color: inherit;
+    }
+    .plan p {
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: inherit;
+    }
+    .plan .amount {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: inherit;
+      margin-bottom: 1rem;
+    }
+    .plan button {
+      padding: 12px 24px;
+      background: #00d96c;
+      color: #1e1f29;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .plan button:hover {
+      background: #1e1f29;
+      color: #00d96c;
+      border: 2px solid #00d96c;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>STOCK GENIE</h2>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+  <aside>
+    <ul>
+      <li><a href="{% url 'portfolio' %}" class="active">📈 Portfolio</a></li>
+      <li><a href="{% url 'prediction' %}">🔮 Prediction</a></li>
+      <li><a href="{% url 'chart' %}">📊 NEPSE Chart</a></li>
+      <li><a href="{% url 'announcement' %}">📢 Announcements</a></li>
+      <li><a href="{% url 'payment' %}" class="active">💰 Payments</a></li>
+    </ul>
+  </aside>
+  <main>
+    <h1>Payment Plans</h1>
+    <div class="plan">
+      <h3>Price Action Signal Package</h3>
+      <p>Real-time price alerts based on market movements.</p>
+      <p class="amount">Nrs 499 / month</p>
+      <button>Subscribe</button>
+    </div>
+    <div class="plan">
+      <h3>Divergence Signal Package</h3>
+      <p>Automated divergence signals using RSI/MACD.</p>
+      <p class="amount">Nrs 699 / month</p>
+      <button>Subscribe</button>
+    </div>
+    <div class="plan">
+      <h3>All-in-One Premium</h3>
+      <p>Includes all features: signals, analytics, tutorial access.</p>
+      <p class="amount">Nrs 1099 / month</p>
+      <button>Subscribe</button>
+    </div>
+  </main>
+</body>
+</html>

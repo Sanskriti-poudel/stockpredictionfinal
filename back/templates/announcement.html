@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Announcements | STOCK GENIE</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: #1e1f29;
+      display: flex;
+      min-height: 100vh;
+      color: #ddd;
+    }
+
+    header {
+      background: linear-gradient(90deg, #1e1f29, #00d96c);
+      color: white;
+      padding: 1rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0, 217, 108, 0.3);
+    }
+
+    header nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 20px;
+      transition: background 0.3s;
+    }
+
+    header nav a:hover {
+      background: white;
+      color: #00d96c;
+    }
+
+    aside {
+      width: 220px;
+      background: #2c2d3c;
+      padding-top: 70px;
+      position: fixed;
+      top: 60px;
+      bottom: 0;
+      overflow-y: auto;
+    }
+
+    aside ul {
+      list-style: none;
+      padding-left: 1rem;
+    }
+
+    aside a {
+      display: block;
+      color: #ccc;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      transition: background 0.3s;
+    }
+
+    aside a:hover,
+    aside a.active {
+      background: #00d96c;
+      color: #1e1f29;
+    }
+
+    main {
+      margin-left: 220px;
+      padding: 90px 30px 30px;
+      flex: 1;
+    }
+
+    h1 {
+      color: #00d96c;
+      margin-bottom: 24px;
+      font-size: 28px;
+    }
+
+    .announcement {
+      background: #292a3b;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      border-left: 5px solid #00d96c;
+    }
+
+    .announcement h3 {
+      color: #00d96c;
+      margin-bottom: 6px;
+    }
+
+    .announcement p {
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+      color: #ccc;
+    }
+
+    .date {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-bottom: 8px;
+      font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      aside {
+        position: relative;
+        width: 100%;
+        top: 0;
+      }
+
+      main {
+        margin-left: 0;
+        padding-top: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>STOCK GENIE</h2>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+
+  <aside>
+    <ul>
+
+      <li><a href="portfoilo.html">📈 Portfolio</a></li>
+      <li><a href="dashboard.html">📊 Market Overview</a></li>
+      <li><a href="chart.html">📉 NEPSE Chart</a></li>
+      <li><a href="prediction.html">🔮 Prediction</a></li>
+      <li><a href="announcement.html" class="active">📢 Announcements</a></li>
+      <li><a href="payment.html">💰 Payments</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <h1>📢 Latest Announcements</h1>
+
+    <div class="announcement">
+      <h3>LICN Adjusted Price Notice</h3>
+      <p class="date">June 29, 2025</p>
+      <p>📌 Effective July 2, LICN's price has been adjusted to reflect the bonus share distribution. Please update your portfolio accordingly.</p>
+    </div>
+
+    <div class="announcement">
+      <h3>🚫 Trading Halt: ABCD</h3>
+      <p class="date">July 1, 2025</p>
+      <p>Trading for ABCD has been suspended due to corporate restructuring. Resumption is pending Supreme Court clarification.</p>
+    </div>
+  </main>
+</body>
+</html>

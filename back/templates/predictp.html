@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NEPSE Prediction System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary:rgb(137, 43, 174);
+      --secondary: #f9fdfc;
+      --accent: #f0f7ff;
+      --green: #d2f8d2;
+      --red: #ffe6e6;
+      --dark: #222;
+      --muted: #666;
+      --shadow: rgba(0, 0, 0, 0.1);
+    }
+    body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--secondary); color: var(--dark); }
+    .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
+    .title { text-align: center; font-size: 2.5rem; color: var(--primary); font-weight: 700; margin-bottom: 30px; }
+    .section { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 10px 25px var(--shadow); margin-bottom: 30px; transition: transform 0.3s ease; }
+    .section:hover { transform: translateY(-4px); }
+    .subtext { color: var(--muted); font-size: 1rem; margin-bottom: 8px; }
+    select { width: 100%; padding: 14px 16px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; transition: border-color 0.3s ease; }
+    select:focus { outline: none; border-color: var(--primary); }
+    .prediction-box { padding: 16px; border-radius: 12px; text-align: center; font-size: 1.3rem; margin-top: 10px; background: var(--accent); transition: transform 0.3s ease; }
+    .prediction-box:hover { transform: scale(1.02); }
+    .prediction-box.green { background-color: var(--green); }
+    .prediction-box.red { background-color: var(--red); }
+    .price-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between; }
+    .price-grid>div { flex: 1 1 48%; }
+    @media (max-width: 768px) { .price-grid { flex-direction: column; } .price-grid>div { flex: 1 1 100%; } }
+    canvas { margin-top: 20px; background: #f9f9f9; border-radius: 12px; padding: 10px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="title">📈 Stock Price Prediction</h2>
+
+    <!-- Company Selection -->
+    <div class="section">
+      <label class="subtext">Select Company</label>
+      <select id="companySelect"></select>
+      <p class="subtext">Currently viewing: <b id="selectedCompany"></b></p>
+    </div>
+
+    <!-- Prediction Boxes -->
+    <div class="section">
+      <div class="price-grid">
+        <div>
+          <p class="subtext">Latest Closing Price:</p>
+          <div class="prediction-box" id="latestPrice">--</div>
+        </div>
+        <div>
+          <p class="subtext">Predicted Next Price:</p>
+          <div class="prediction-box green" id="predictedPrice">--</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="section">
+      <p class="subtext">📊 Historical Closing Prices</p>
+      <canvas id="chartCanvas" height="300"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const companySelect = document.getElementById("companySelect");
+    const selectedCompany = document.getElementById("selectedCompany");
+    const latestPrice = document.getElementById("latestPrice");
+    const predictedPrice = document.getElementById("predictedPrice");
+    const ctx = document.getElementById("chartCanvas").getContext("2d");
+    let myChart;
+  
+    // Load stock list
+    fetch("/nepse/stocks/")
+      .then(res => res.json())
+      .then(stockList => {
+        stockList.forEach(stock => {
+          const option = document.createElement("option");
+          option.value = stock;
+          option.textContent = stock;
+          companySelect.appendChild(option);
+        });
+        if (stockList.length > 0) {
+          companySelect.value = stockList[0];
+          loadCompany(stockList[0]);
+        }
+      });
+  
+    companySelect.addEventListener("change", e => {
+      loadCompany(e.target.value);
+    });
+  
+    function loadCompany(company) {
+      selectedCompany.textContent = company;
+  
+      // Load chart data (JSON file)
+      fetch(`/static/stockprediction/data/json/${company}.json`)
+        .then(res => res.json())
+        .then(data => {
+          if (!data || data.length === 0) return;
+  
+          const latest = data[data.length - 1];
+          latestPrice.textContent = `NPR ${latest.LTP.toFixed(2)}`;
+  
+          const labels = data.map(d => d.Date);
+          const values = data.map(d => d.LTP);
+  
+          if (myChart) myChart.destroy();
+          myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels.slice(-30),
+              datasets: [{
+                label: company + " Price",
+                data: values.slice(-30),
+                borderColor: "#2BAE66",
+                backgroundColor: "rgba(43, 174, 102, 0.1)",
+                fill: true,
+                tension: 0.4
+              }]
+            },
+            options: {
+              responsive: true,
+              scales: {
+                x: { ticks: { autoSkip: true, maxTicksLimit: 10 } },
+                y: { beginAtZero: false }
+              }
+            }
+          });
+        });
+  
+      // Fetch prediction
+      fetch(`/nepse/predict/?symbol=${company}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.predicted_price) {
+            predictedPrice.textContent = `NPR ${data.predicted_price.toFixed(2)}`;
+            predictedPrice.classList.remove("red");
+            predictedPrice.classList.add("green");
+          } else {
+            predictedPrice.textContent = data.error || "No prediction";
+            predictedPrice.classList.remove("green");
+            predictedPrice.classList.add("red");
+          }
+        })
+        .catch(err => {
+          predictedPrice.textContent = "Prediction error";
+          predictedPrice.classList.remove("green");
+          predictedPrice.classList.add("red");
+          console.error(err);
+        });
+    }
+  </script>
+  
+  
+</body>
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portfolio | STOCK GENIE</title>
+  <style>
+    /* Reset and base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background-color: #1e1f29;
+      color: #ddd;
+      padding-top: 90px; /* space for fixed header */
+      min-height: 100vh;
+    }
+
+    /* Header / Navbar */
+    header {
+      background: linear-gradient(90deg, #1e1f29, #00d96c);
+      color: white;
+      padding: 1rem 2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 10px rgba(0, 217, 108, 0.6);
+    }
+
+    header h2 {
+      font-size: 24px;
+      flex: 1 1 auto;
+      white-space: nowrap;
+    }
+
+    header nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      flex: 1 1 auto;
+      justify-content: flex-end;
+    }
+
+    header nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 6px 16px;
+      border: 2px solid white;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    header nav a:hover {
+      background: white;
+      color: #00d96c;
+      border-color: #00d96c;
+    }
+
+    /* Main title */
+    h2.page-title {
+      color: #00d96c;
+      margin: 20px auto 30px;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    /* Form container */
+    .form-container {
+      max-width: 900px;
+      margin: 0 auto 30px auto;
+      background: #292a3b;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .form-group {
+      flex: 1 1 30%;
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #eee;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 10px 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      background: #1e1f29;
+      color: #ddd;
+      border: 1.5px solid #555;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #00d96c;
+    }
+
+    .submit-button {
+      flex: 1 1 100%;
+      max-width: 200px;
+      margin: 0 auto;
+      padding: 12px 0;
+      background-color: #00d96c;
+      color: #1e1f29;
+      font-weight: 700;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-align: center;
+    }
+
+    .submit-button:hover {
+      background-color: #02c276;
+    }
+
+    /* Messages */
+    .message {
+      max-width: 900px;
+      margin: 10px auto 20px auto;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    .message.error {
+      color: #ff6b6b;
+    }
+
+    .message.success {
+      color: #00d96c;
+    }
+
+    /* Portfolio table */
+    .portfolio-table-container {
+      max-width: 900px;
+      margin: 0 auto 50px auto;
+      background: #292a3b;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 16px;
+      min-width: 600px;
+    }
+
+    thead {
+      background-color: #00d96c;
+      color: #1e1f29;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #444;
+      text-align: center;
+    }
+
+    tbody tr:hover {
+      background-color: #37394e;
+    }
+
+    tfoot td {
+      font-weight: 700;
+      font-size: 18px;
+      padding-top: 15px;
+      color: #00d96c;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+      }
+      header h2 {
+        margin-bottom: 10px;
+      }
+      header nav {
+        justify-content: flex-start;
+        gap: 8px;
+        width: 100%;
+      }
+      header nav a {
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+
+      .form-container {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .form-group {
+        flex: 1 1 100%;
+      }
+
+      .submit-button {
+        max-width: 100%;
+      }
+
+      .portfolio-table-container {
+        padding: 10px;
+      }
+
+      table {
+        font-size: 14px;
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Check -->
+  <script>
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+  </script>
+
+  <!-- Navbar -->
+  <header>
+    <h2>STOCK GENIE</h2>
+    <nav>
+      <a href="{% url 'home' %}">Home</a>
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </nav>
+  </header>
+
+  <h2 class="page-title">📈 Your Portfolio</h2>
+
+  <form id="portfolioForm" class="form-container" onsubmit="return addStock(event)">
+    <div class="form-group">
+      <label for="stockSymbol">Stock Symbol</label>
+      <input type="text" id="stockSymbol" name="stockSymbol" maxlength="10" placeholder="e.g. NABIL" required />
+    </div>
+    <div class="form-group">
+      <label for="quantity">Quantity</label>
+      <input type="number" id="quantity" name="quantity" min="1" step="1" value="1" required />
+    </div>
+    <div class="form-group">
+      <label for="buyPrice">Buy Price (NPR)</label>
+      <input type="number" id="buyPrice" name="buyPrice" min="0" step="0.01" value="0.00" required />
+    </div>
+    <button type="submit" class="submit-button">Add to Portfolio</button>
+  </form>
+
+  <div id="message" class="message"></div>
+
+  <div class="portfolio-table-container" style="display:none;">
+    <table id="portfolioTable">
+      <thead>
+        <tr>
+          <th>Stock Symbol</th>
+          <th>Quantity</th>
+          <th>Buy Price (NPR)</th>
+          <th>Total Investment (NPR)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- dynamically added rows -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" style="text-align:right;">💰 Total Investment:</td>
+          <td id="totalInvestment">NPR 0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      window.location.href = 'login.html';
+    }
+
+    let portfolio = [];
+
+    function addStock(event) {
+      event.preventDefault();
+
+      const symbolInput = document.getElementById('stockSymbol');
+      const quantityInput = document.getElementById('quantity');
+      const buyPriceInput = document.getElementById('buyPrice');
+      const messageDiv = document.getElementById('message');
+      const tableContainer = document.querySelector('.portfolio-table-container');
+      const tbody = document.querySelector('#portfolioTable tbody');
+      const totalInvestmentEl = document.getElementById('totalInvestment');
+
+      const symbol = symbolInput.value.trim().toUpperCase();
+      const quantity = parseInt(quantityInput.value);
+      const buyPrice = parseFloat(buyPriceInput.value);
+
+      if (!symbol) {
+        messageDiv.textContent = "⚠️ Please enter a valid stock symbol.";
+        messageDiv.className = "message error";
+        return false;
+      }
+
+      portfolio.push({ symbol, quantity, buyPrice });
+
+      tbody.innerHTML = "";
+      let totalInvestment = 0;
+
+      portfolio.forEach(stock => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${stock.symbol}</td>
+          <td>${stock.quantity}</td>
+          <td>NPR ${stock.buyPrice.toFixed(2)}</td>
+          <td>NPR ${(stock.quantity * stock.buyPrice).toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+        totalInvestment += stock.quantity * stock.buyPrice;
+      });
+
+      totalInvestmentEl.textContent = `NPR ${totalInvestment.toFixed(2)}`;
+      tableContainer.style.display = "block";
+      messageDiv.textContent = `✅ Added ${symbol} to your portfolio.`;
+      messageDiv.className = "message success";
+
+      event.target.reset();
+      quantityInput.value = 1;
+      buyPriceInput.value = 0.00;
+
+      return false;
+    }
+  </script>
+
+</body>
+</html>
