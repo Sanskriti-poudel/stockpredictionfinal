@@ -3,75 +3,75 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prediction | STOCK GENIE</title>
+  <title>Stock Genie | Prediction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Base */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background-color: #1e1f29; color: #ddd; padding-top: 90px; font-family: sans-serif; }
-
-    /* Navbar */
+    body {
+      background-color: #1e1f29;
+      color: #ddd;
+      font-family: 'Inter', sans-serif;
+      padding-top: 80px;
+    }
     header {
       background: linear-gradient(90deg, #1e1f29, #00d96c);
       color: white;
       padding: 1rem 2rem;
-      position: fixed; top: 0; left: 0; width: 100%; z-index: 100;
+      position: fixed; top: 0; width: 100%; z-index: 100;
       display: flex; justify-content: space-between; align-items: center;
-      box-shadow: 0 3px 10px rgba(0, 217, 108, 0.6);
+      box-shadow: 0 3px 10px rgba(0, 217, 108, 0.5);
     }
-    header h2 { font-size: 24px; }
     header nav a {
       color: white;
-      margin-left: 10px;
+      margin-left: 12px;
       text-decoration: none;
       font-weight: 600;
-      padding: 6px 16px;
       border: 2px solid white;
-      border-radius: 25px;
+      border-radius: 20px;
+      padding: 6px 14px;
       transition: 0.3s;
     }
     header nav a:hover {
       background: white; color: #00d96c; border-color: #00d96c;
     }
-
-    .container { max-width: 1100px; margin: 40px auto; padding: 20px; }
-
-    .title { color: #00d96c; text-align: center; margin-bottom: 20px; font-size: 28px; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    h2.title { color: #00d96c; text-align: center; margin-bottom: 20px; }
     .section {
-      background-color: #292a3b;
+      background: #292a3b;
+      border-radius: 10px;
       padding: 20px;
-      border-radius: 12px;
       margin-bottom: 30px;
     }
-
-    label { font-weight: 600; }
     select {
-      width: 100%; padding: 12px;
-      background-color: #1e1f29; color: #ddd;
-      border: 1.5px solid #555; border-radius: 6px;
+      width: 100%; padding: 10px;
+      background: #1e1f29; color: #ddd;
+      border: 1px solid #555; border-radius: 6px;
       font-size: 16px;
       margin-top: 10px;
     }
-
     .prediction-grid {
-      display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+      display: flex; gap: 20px; flex-wrap: wrap;
     }
     .prediction-box {
       flex: 1 1 45%;
-      background-color: #1e1f29;
+      background: #1e1f29;
       border: 2px solid #444;
+      border-radius: 8px;
       padding: 20px;
-      border-radius: 10px;
       text-align: center;
       font-size: 20px;
     }
-    .prediction-box.green { background-color: #00d96c; color: #1e1f29; font-weight: 700; }
-    .subtext { margin-top: 8px; color: #aaa; }
-
-    .chart-placeholder {
-      border: 2px dashed #444;
-      height: 300px;
-      display: flex; justify-content: center; align-items: center;
-      border-radius: 8px; color: #aaa;
+    .prediction-box.green {
+      background: #00d96c;
+      color: #1e1f29;
+      font-weight: 700;
+    }
+    .subtext { margin-top: 10px; color: #aaa; }
+    img.plot {
+      max-width: 100%;
+      border-radius: 10px;
+      background: #1e1f29;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -88,73 +88,50 @@
   <div class="container">
     <h2 class="title">📈 Stock Price Prediction</h2>
 
-    <!-- Company selector -->
     <div class="section">
-      <label for="company">Select Company Symbol:</label>
-      <select id="company">
-        <option value="">-- Select a stock --</option>
-      </select>
-      <p class="subtext">Showing predictions for: <b id="selected-symbol">-</b></p>
+      <form method="get">
+        <label for="stock">Select Stock:</label>
+        <select name="stock" id="stock">
+          <option value="">-- Select --</option>
+          {% for s in stocks %}
+            <option value="{{ s }}" {% if selected_stock == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" style="
+          margin-top: 15px;
+          padding: 10px 20px;
+          background: #00d96c;
+          color: #1e1f29;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 600;
+        ">Predict</button>
+      </form>
     </div>
 
-    <!-- Prediction -->
     <div class="section prediction-grid">
-      <div>
-        <p>Latest Closing Price:</p>
-        <div class="prediction-box" id="latest-price">NPR 0.00</div>
+      <div class="prediction-box">
+        <p>Last Traded Price</p>
+        <div>
+          {% if actual_prices %}
+            NPR {{ actual_prices|last|floatformat:2 }}
+          {% else %}
+            N/A
+          {% endif %}
+        </div>
       </div>
-      <div>
-        <p>Predicted Next Price:</p>
-        <div class="prediction-box green" id="predicted-price">NPR 0.00</div>
+      <div class="prediction-box green">
+        <p>Predicted Next Day's LTP</p>
+        <div>
+          {% if predicted_price is not None%}
+            NPR {{ predicted_price|floatformat:2 }}
+          {% else %}
+            N/A
+          {% endif %}
+        </div>
       </div>
-    </div>
-
-    <!-- Chart Placeholder -->
-    <div class="section">
-      <p>📊 Historical NEPSE Index:</p>
-      <div class="chart-placeholder">Chart will be displayed here</div>
-    </div>
+    
   </div>
-
-  <script>
-    async function loadStockList() {
-      try {
-        const response = await fetch("/api/stock-list/");
-        const data = await response.json();
-        const select = document.getElementById("company");
-        data.forEach(symbol => {
-          const option = document.createElement("option");
-          option.value = symbol;
-          option.textContent = symbol;
-          select.appendChild(option);
-        });
-      } catch (err) {
-        console.error("Error loading stock list:", err);
-      }
-    }
-
-    async function loadPrediction(symbol) {
-      try {
-        const response = await fetch(`/api/predict-stock/?symbol=${symbol}`);
-        const data = await response.json();
-        if (data.error) {
-          alert(data.error);
-          return;
-        }
-        document.getElementById("selected-symbol").textContent = data.symbol;
-        document.getElementById("latest-price").textContent = `NPR ${data.latest_ltp.toFixed(2)}`;
-        document.getElementById("predicted-price").textContent = `NPR ${data.predicted_price.toFixed(2)}`;
-      } catch (err) {
-        console.error("Error fetching prediction:", err);
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      loadStockList();
-      document.getElementById("company").addEventListener("change", e => {
-        if (e.target.value) loadPrediction(e.target.value);
-      });
-    });
-  </script>
 </body>
 </html>

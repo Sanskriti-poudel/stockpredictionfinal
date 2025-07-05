@@ -11,7 +11,6 @@
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
     body {
       background: #1e1f29;
       color: #ddd;
@@ -20,7 +19,6 @@
       align-items: center;
       height: 100vh;
     }
-
     .signup-container {
       background: #292a3b;
       padding: 2.5rem 3rem;
@@ -28,21 +26,31 @@
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       width: 360px;
     }
-
     h2 {
       text-align: center;
       margin-bottom: 1.8rem;
       font-weight: 700;
       color: #00d96c;
     }
-
     label {
       display: block;
       margin-bottom: 0.4rem;
       font-weight: 600;
       color: #ccc;
     }
-
+    .password-toggle {
+      position: relative;
+    }
+    .toggle-btn {
+      position: absolute;
+      right: 10px;
+      top: 12px;
+      background: none;
+      border: none;
+      color: #00d96c;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
     input[type="text"],
     input[type="email"],
     input[type="password"] {
@@ -55,13 +63,11 @@
       background: #1e1f29;
       color: #ddd;
     }
-
     input:focus {
       outline: none;
       border-color: #00d96c;
     }
-
-    button {
+    button[type="submit"] {
       width: 100%;
       padding: 14px;
       background: #00d96c;
@@ -73,23 +79,19 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
-    button:hover {
+    button[type="submit"]:hover {
       background: #02c276;
     }
-
     .login-link {
       text-align: center;
       margin-top: 1rem;
       font-size: 0.9rem;
     }
-
     .login-link a {
       color: #00d96c;
       font-weight: 600;
       text-decoration: none;
     }
-
     .login-link a:hover {
       text-decoration: underline;
     }
@@ -100,13 +102,22 @@
     <h2>Create Your Account</h2>
     <form id="signup-form">
       <label for="name">Full Name</label>
-      <input type="text" id="name" placeholder="John Doe" required />
+      <input type="text" id="name" placeholder="Your Name" required />
 
       <label for="email">Email Address</label>
       <input type="email" id="email" placeholder="you@example.com" required />
 
       <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Create a password" required />
+      <div class="password-toggle">
+        <input type="password" id="password" placeholder="Create a password" required />
+        <button class="toggle-btn" type="button" onclick="togglePassword('password')">Show</button>
+      </div>
+
+      <label for="confirm-password">Confirm Password</label>
+      <div class="password-toggle">
+        <input type="password" id="confirm-password" placeholder="Re-enter your password" required />
+        <button class="toggle-btn" type="button" onclick="togglePassword('confirm-password')">Show</button>
+      </div>
 
       <button type="submit">Sign Up</button>
     </form>
@@ -116,8 +127,26 @@
   </div>
 
   <script>
+    function togglePassword(id) {
+      const field = document.getElementById(id);
+      const button = field.nextElementSibling;
+      if (field.type === "password") {
+        field.type = "text";
+        button.textContent = "Hide";
+      } else {
+        field.type = "password";
+        button.textContent = "Show";
+      }
+    }
+
     document.getElementById('signup-form').addEventListener('submit', e => {
       e.preventDefault();
+      const password = e.target.password.value;
+      const confirmPassword = e.target['confirm-password'].value;
+      if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
       alert('Account created for ' + e.target.email.value);
       e.target.reset();
     });

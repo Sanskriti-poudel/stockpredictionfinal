@@ -1,116 +1,82 @@
-# stockprediction/views.py
-
 import os
-import pandas as pd
-import numpy as np
+import json
 import joblib
+import numpy as np
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
 from tensorflow import keras
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-
-
-# cache to avoid repeated model reloads
-loaded_models = {}
-
-# === HTML PAGE VIEWS ===
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, "home.html")
 
 def user_login(request):
-    # if request.method == "POST":
-    #     password = request.POST.get("password")
-    #     username = request.POST.get("username")`
-    # `
-    return render(request, 'login.html')
-
-def signup(request):
-    return render(request, 'signup.html')
+    return render(request, "login.html")
 
 def chart(request):
-    return render(request, 'chart.html')
+    return render(request, "chart.html")
 
 def portfolio(request):
-    return render(request, 'portfolio.html')
-
-def prediction(request):
-    return render(request, 'prediction.html')
+    return render(request, "portfolio.html")
 
 def announcement(request):
-    return render(request, 'announcement.html')
-
-def dashboard(request):
-    return render(request, 'dashboard.html')
+    return render(request, "announcement.html")
 
 def payment(request):
-    return render(request, 'payment.html')
+    return render(request, "payment.html")
 
+def signup(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("login")
+    else:
+        form = UserCreationForm()
+    return render(request, "signup.html", {"form": form})
 
-# === API VIEWS ===
+def dashboard(request):
+    return render(request, "dashboard.html")
 
-def predict_stock(request):
-    symbol = request.GET.get("symbol")
-    if not symbol:
-        return JsonResponse({"error": "Missing symbol"}, status=400)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    # load model if not already cached
-    if symbol not in loaded_models:
+def prediction(request):
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    data_dir = os.path.join(BASE_DIR, 'data')
+    stock_list = [f.replace('.json', '') for f in os.listdir(data_dir) if f.endswith('.json')]
+
+    predicted_ltp_path = os.path.join(BASE_DIR, 'prediction', 'predicted_ltp.json')
+    try:
+        with open(predicted_ltp_path) as f:
+            predicted_ltp_data = json.load(f)
+        print(f"Loaded predicted_ltp.json successfully. Keys: {list(predicted_ltp_data.keys())[:5]}")
+    except Exception as e:
+        print(f"Error loading predicted_ltp.json: {e}")
+        predicted_ltp_data = {}
+
+    selected_stock = request.GET.get('stock')
+    predicted_price = None
+    actual_prices = []
+
+    if selected_stock:
+        print(f"Selected stock: {selected_stock}")
         try:
-            model_path = os.path.join(
-                "stockprediction", "allsavedmodels", "gru_fundamental", f"{symbol}_GRU.keras"
-            )
-            x_scaler_path = os.path.join(
-                "stockprediction", "allsavedmodels", "gru_fundamental", f"{symbol}_scaler.save"
-            )
-            y_scaler_path = os.path.join(
-                "stockprediction", "allsavedmodels", "gru_fundamental", f"{symbol}_y_scaler.save"
-            )
-            model = keras.models.load_model(model_path)
-            x_scaler = joblib.load(x_scaler_path)
-            y_scaler = joblib.load(y_scaler_path)
-            loaded_models[symbol] = (model, x_scaler, y_scaler)
+            data_path = os.path.join(data_dir, f"{selected_stock}.json")
+            with open(data_path) as f:
+                historical_data = json.load(f)
+
+            prices = [entry["LTP"] for entry in historical_data if "LTP" in entry]
+            actual_prices = prices
+            print(f"Found {len(prices)} prices in historical data.")
+
+            predicted_price = predicted_ltp_data.get(selected_stock.lower())
+            print(f"Predicted price from JSON: {predicted_price}")
+
         except Exception as e:
-            return JsonResponse({"error": f"Failed to load model for {symbol}: {str(e)}"}, status=500)
+            print(f"Error processing stock {selected_stock}: {e}")
 
-    model, x_scaler, y_scaler = loaded_models[symbol]
-
-    # load historical data
-    file_path = os.path.join(
-        "stockprediction", "data", "historical", f"{symbol.lower()}.xlsx"
-    )
-    if not os.path.exists(file_path):
-        return JsonResponse({"error": f"No historical data for {symbol}"}, status=404)
-
-    try:
-        df = pd.read_excel(file_path)
-        df = df.head(30)
-        features = df[["LTP", "High", "Low", "Open", "Qty.", "Turnover"]].values
-        latest_ltp = float(df.iloc[0]["LTP"])
-        features_scaled = x_scaler.transform(features.reshape(-1, features.shape[1])).reshape(1, 30, features.shape[1])
-        y_pred_scaled = model.predict(features_scaled)
-        y_pred = y_scaler.inverse_transform(y_pred_scaled)
-    except Exception as e:
-        return JsonResponse({"error": f"Error processing prediction: {str(e)}"}, status=500)
-
-    return JsonResponse({
-        "symbol": symbol,
-        "latest_ltp": latest_ltp,
-        "predicted_price": float(y_pred[0][0])
+    return render(request, "prediction.html", {
+        "stocks": stock_list,
+        "selected_stock": selected_stock,
+        "predicted_price": predicted_price,
+        "actual_prices": actual_prices,
     })
-
-
-def stock_list_api(request):
-    model_path = "stockprediction/allsavedmodels/gru_fundamental/"
-    stocks = []
-    try:
-        model_files = set(
-            f.replace("_GRU.keras", "") for f in os.listdir(model_path) if f.endswith("_GRU.keras")
-        )
-        stocks = sorted(list(model_files))
-    except Exception as e:
-        return JsonResponse({"error": f"Error listing stocks: {str(e)}"}, status=500)
-
-    return JsonResponse(stocks, safe=False)
