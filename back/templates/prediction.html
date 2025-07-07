@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,6 +67,18 @@
       color: #1e1f29;
       font-weight: 700;
     }
+    .prediction-box.red {
+      background: #ff4c4c;
+      color: #1e1f29;
+      font-weight: 700;
+    }
+    
+    .prediction-box.blue {
+      background: #4c8cff;
+      color: #1e1f29;
+      font-weight: 700;
+    }
+    
     .subtext { margin-top: 10px; color: #aaa; }
     img.plot {
       max-width: 100%;
@@ -121,17 +134,48 @@
           {% endif %}
         </div>
       </div>
-      <div class="prediction-box green">
-        <p>Predicted Next Day's LTP</p>
-        <div>
-          {% if predicted_price is not None%}
-            NPR {{ predicted_price|floatformat:2 }}
-          {% else %}
-            N/A
-          {% endif %}
-        </div>
+      <div class="
+      prediction-box
+      {% if actual_prices and predicted_price is not None %}
+        {% if actual_prices|last > predicted_price %}
+          red
+        {% elif actual_prices|last < predicted_price %}
+          green
+        {% else %}
+          blue
+        {% endif %}
+      {% else %}
+        green
+      {% endif %}
+    ">
+      <p>Predicted Next Day's LTP</p>
+      <div>
+        {% if predicted_price is not None %}
+          NPR {{ predicted_price|floatformat:2 }}
+        {% else %}
+          N/A
+        {% endif %}
       </div>
+    </div>
     
+    
+
+        <!-- Existing prediction-grid ends here -->
+    </div>
+    {% load static %}
+
+    <!-- New section for Actual vs Predicted graph -->
+    <div class="section">
+      <h3 style="color: #00d96c; margin-bottom: 10px;">Actual vs Predicted Graph</h3>
+      {% if prediction_plot %}
+        <img src="{% static prediction_plot %}" alt="Actual vs Predicted Plot" class="plot">
+      {% else %}
+        <p style="text-align:center; color:#aaa;">No graph available. Please make a prediction to see the results.</p>
+      {% endif %}
+    </div>
+
   </div>
 </body>
 </html>
+
+

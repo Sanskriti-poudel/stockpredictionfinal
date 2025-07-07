@@ -56,6 +56,7 @@ def prediction(request):
     selected_stock = request.GET.get('stock')
     predicted_price = None
     actual_prices = []
+    prediction_plot = None  # <-- NEW
 
     if selected_stock:
         print(f"Selected stock: {selected_stock}")
@@ -71,6 +72,12 @@ def prediction(request):
             predicted_price = predicted_ltp_data.get(selected_stock.lower())
             print(f"Predicted price from JSON: {predicted_price}")
 
+            # build static plot path
+            plot_filename = f"{selected_stock.lower()}.png"
+            plot_path = os.path.join('plots', plot_filename)  # relative to static
+            prediction_plot = plot_path
+            print(f"Prediction plot path: {prediction_plot}")
+
         except Exception as e:
             print(f"Error processing stock {selected_stock}: {e}")
 
@@ -79,4 +86,5 @@ def prediction(request):
         "selected_stock": selected_stock,
         "predicted_price": predicted_price,
         "actual_prices": actual_prices,
+        "prediction_plot": prediction_plot,  # <-- pass to template
     })
