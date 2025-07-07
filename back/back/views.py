@@ -1,28 +1,31 @@
 import os
 import json
-import joblib
-import numpy as np
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
-from tensorflow import keras
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.views import LogoutView
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+def admin(request):
+    from django.contrib import admin
+    return admin.site.urls
 
 def home(request):
     return render(request, "home.html")
 
-def user_login(request):
-    return render(request, "login.html")
-
-def chart(request):
-    return render(request, "chart.html")
-
-def portfolio(request):
-    return render(request, "portfolio.html")
-
-def announcement(request):
-    return render(request, "announcement.html")
-
-def payment(request):
-    return render(request, "payment.html")
+def custom_login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            return render(request, 'login.html', {'error': 'Invalid credentials'})
+    return render(request, 'login.html')
 
 def signup(request):
     if request.method == "POST":
@@ -34,13 +37,28 @@ def signup(request):
         form = UserCreationForm()
     return render(request, "signup.html", {"form": form})
 
+@login_required
 def dashboard(request):
     return render(request, "dashboard.html")
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+@login_required
+def chart(request):
+    return render(request, "chart.html")
 
+@login_required
+def portfolio(request):
+    return render(request, "portfolio.html")
+
+@login_required
+def announcement(request):
+    return render(request, "announcement.html")
+
+@login_required
+def payment(request):
+    return render(request, "payment.html")
+
+@login_required
 def prediction(request):
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     data_dir = os.path.join(BASE_DIR, 'data')
     stock_list = [f.replace('.json', '') for f in os.listdir(data_dir) if f.endswith('.json')]
 
@@ -56,10 +74,9 @@ def prediction(request):
     selected_stock = request.GET.get('stock')
     predicted_price = None
     actual_prices = []
-    prediction_plot = None  # <-- NEW
+    prediction_plot = None
 
     if selected_stock:
-        print(f"Selected stock: {selected_stock}")
         try:
             data_path = os.path.join(data_dir, f"{selected_stock}.json")
             with open(data_path) as f:
@@ -67,16 +84,10 @@ def prediction(request):
 
             prices = [entry["LTP"] for entry in historical_data if "LTP" in entry]
             actual_prices = prices
-            print(f"Found {len(prices)} prices in historical data.")
-
             predicted_price = predicted_ltp_data.get(selected_stock.lower())
-            print(f"Predicted price from JSON: {predicted_price}")
 
-            # build static plot path
             plot_filename = f"{selected_stock.lower()}.png"
-            plot_path = os.path.join('plots', plot_filename)  # relative to static
-            prediction_plot = plot_path
-            print(f"Prediction plot path: {prediction_plot}")
+            prediction_plot = os.path.join('plots', plot_filename)
 
         except Exception as e:
             print(f"Error processing stock {selected_stock}: {e}")
@@ -86,5 +97,5 @@ def prediction(request):
         "selected_stock": selected_stock,
         "predicted_price": predicted_price,
         "actual_prices": actual_prices,
-        "prediction_plot": prediction_plot,  # <-- pass to template
+        "prediction_plot": prediction_plot,
     })

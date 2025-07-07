@@ -1,24 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login | STOCK GENIE</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    body {
-      background-color: #1e1f29;
-      color: #ddd;
-    }
-
-    /* Navbar */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: #1e1f29; color: #ddd; }
     .nav {
       background-color: #0a2647;
       color: #00d96c;
@@ -27,12 +15,7 @@
       justify-content: space-between;
       align-items: center;
     }
-
-    .nav h2 {
-      font-size: 20px;
-      color: #00d96c;
-    }
-
+    .nav h2 { font-size: 20px; color: #00d96c; }
     .nav a {
       color: #00d96c;
       margin-left: 15px;
@@ -40,12 +23,7 @@
       font-size: 14px;
       font-weight: 600;
     }
-
-    .nav a:hover {
-      text-decoration: underline;
-    }
-
-    /* Login Card */
+    .nav a:hover { text-decoration: underline; }
     .form-card {
       background-color: #292a3b;
       width: 95%;
@@ -56,32 +34,22 @@
       border-radius: 10px;
       animation: fadeInUp 0.8s ease-in-out;
     }
-
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from {opacity: 0; transform: translateY(40px);}
+      to {opacity: 1; transform: translateY(0);}
     }
-
     .form-card h3 {
       color: #00d96c;
       text-align: center;
       margin-bottom: 22px;
       font-size: 20px;
     }
-
     .form-card label {
       display: block;
       font-size: 14px;
       margin-bottom: 5px;
       color: #ccc;
     }
-
     .form-card input[type="text"],
     .form-card input[type="password"] {
       width: 100%;
@@ -93,11 +61,6 @@
       background-color: #1e1f29;
       color: #eee;
     }
-
-    .form-card input[type="checkbox"] {
-      margin-right: 6px;
-    }
-
     .form-card .checkbox-label {
       font-size: 13px;
       margin-bottom: 15px;
@@ -105,7 +68,6 @@
       align-items: center;
       color: #bbb;
     }
-
     .form-card button {
       background-color: #00d96c;
       color: #1e1f29;
@@ -118,29 +80,27 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-
-    .form-card button:hover {
-      background-color: #02c276;
-    }
-
+    .form-card button:hover { background-color: #02c276; }
     .form-links {
       text-align: center;
       font-size: 13px;
       margin-top: 18px;
     }
-
     .form-links a {
       color: #00d96c;
       text-decoration: none;
       font-weight: 600;
     }
-
-    .form-links a:hover {
-      text-decoration: underline;
+    .form-links a:hover { text-decoration: underline; }
+    .errorlist {
+      color: red;
+      font-size: 0.9rem;
+      list-style-type: none;
+      margin: 0 0 10px 0;
+      padding: 0;
     }
   </style>
 </head>
-
 <body>
 
   <!-- Navbar -->
@@ -151,48 +111,46 @@
       <a href="{% url 'dashboard' %}">Dashboard</a>
       <a href="{% url 'login' %}">Login</a>
       <a href="{% url 'signup' %}">Signup</a>
-
     </div>
   </div>
 
   <!-- Login Form -->
   <div class="form-card">
     <h3>Login</h3>
-    <>
-      <form method="post" action="/login/">
-        {% csrf_token %}
-        {% if form.errors %}
-          <p style="color: red;">Invalid username or password</p>
-        {% endif %}
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="Enter your username" required>
-      
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" required>
-      
-        <div class="checkbox-label">
-          <input type="checkbox" id="showPass" onclick="togglePassword()">
-          <label for="showPass">Show password</label>
-        </div>
-      
-        <button type="submit">Login</button>
-      </form>
-      
-  
+    <form method="post" action="">
+      {% csrf_token %}
+      {% if form.errors %}
+        <ul class="errorlist">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <label for="username">Username</label>
+      <input type="text" name="username" id="username" placeholder="Enter username" required />
 
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" placeholder="Enter password" required />
+
+      <div class="checkbox-label">
+        <input type="checkbox" id="showPass" onclick="togglePassword()">
+        <label for="showPass">Show password</label>
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
     <div class="form-links">
-      <p><a href="#">Forgot Password?</a></p>
-      <p>Don't have an account? <a href="{% url 'signup'%}">Register</a></p>
+      <p>Don't have an account? <a href="{% url 'signup' %}">Register</a></p>
     </div>
   </div>
 
-  <!-- JS to toggle password visibility -->
   <script>
     function togglePassword() {
       const pwd = document.getElementById("password");
       pwd.type = pwd.type === "password" ? "text" : "password";
     }
   </script>
-
 </body>
 </html>
